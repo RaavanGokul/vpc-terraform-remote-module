@@ -19,7 +19,7 @@ resource "aws_subnet" "public_subnet" {
   tags                    = merge(var.tags, var.public_subnet_tag, { "Name" = "${var.name}-pub-${count.index + 1}" })
 }
 
-resource "aws_subnet" "private_subnet" {
+resource "aws_subnet" "private" {
   count                   = length(var.private_subnet_cidrs)
   vpc_id                  = aws_vpc.main.id
   cidr_block              = element(var.private_subnet_cidrs, count.index)
@@ -37,8 +37,8 @@ resource "aws_route_table" "public" {
   tags = merge({ Name = "${var.name}-public-rt" }, var.tags)
 }
 resource "aws_route_table_association" "public" {
-  count          = length(aws_subnet.public)
-  subnet_id      = aws_subnet.public[count.index].id
+  count          = length(aws_subnet.public_subnet)
+  subnet_id      = aws_subnet.public_subnet[count.index].id
   route_table_id = aws_route_table.public.id
 }
 
@@ -51,7 +51,7 @@ resource "aws_eip" "nat" {
 resource "aws_nat_gateway" "nat" {
   count         = var.create_nat ? 1 : 0
   allocation_id = aws_eip.nat[count.index].id
-  subnet_id     = aws_subnet.public[count.index % length(aws_subnet.public)].id
+  subnet_id     = aws_subnet.public_subnet[count.index % length(aws_subnet.public_subnet)].id
   tags          = merge({ Name = "${var.name}-nat-gw-${count.index + 1}" }, var.tags)
   depends_on    = [aws_internet_gateway.igw]
 }
