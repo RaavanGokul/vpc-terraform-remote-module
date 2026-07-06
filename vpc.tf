@@ -1,5 +1,5 @@
 resource "aws_vpc" "main" {
-  cidr_block           = var.vpc_cidr
+  cidr_block           = var.vpc_cidrs
   enable_dns_support   = var.enable_dns_support
   enable_dns_hostnames = var.enable_dns_host
   tags                 = merge(var.tags, { "Name" = "${var.name}-vpc" })
