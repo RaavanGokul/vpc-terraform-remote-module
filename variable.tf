@@ -9,7 +9,7 @@ variable "region_name" {
   default = ""
 
 }
-variable "vpc_cidr" {
+variable "vpc_cidrs" {
   description = "The CIDR block of the VPC"
   type        = string
   default     = ""
